@@ -3,11 +3,6 @@ import cv2
 from itertools import permutations
 import math
 class filters:
-    prewitt_x = np.array((-1,0,1,-1,0,1,-1,0,1)).reshape(3, 3)
-    prewitt_y = np.array((-1,-1,-1,0,0,0,1,1,1)).reshape(3, 3)
-    sobel_x = np.array((-1,0,1,-2,0,2,-1,0,1)).reshape(3, 3)
-    sobel_y = np.array((-1,-2,-1,0,0,0,1,2,1)).reshape(3, 3)
-    laplace = np.array((-1,-1,-1,-1,8,-1,-1,-1,-1)).reshape(3, 3)
     def __init__(self):
         pass
         
@@ -54,14 +49,15 @@ class filters:
         gauss_d = filters.gauss_vector(self, l)
         gauss_1d = np.zeros((l+1))
         gauss_1d = np.convolve(gauss_d,(1,-1))
-        print(gauss_1d)
+        #print(gauss_1d)
         return gauss_1d
         
     def derv2_gauss(self,l):
         gauss_1d = filters.derv1_gauss(self,l)
         gauss_2d = np.zeros((l+1))
         gauss_2d = np.convolve(gauss_1d,(1,-1))
-        print(gauss_2d)
+        #print(gauss_2d)
+        return gauss_2d
     
     def low_step_block(self, n):
         k_block = np.ones((n,n), dtype=int)/(n*n)
