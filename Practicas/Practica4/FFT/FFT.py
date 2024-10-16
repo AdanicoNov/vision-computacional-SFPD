@@ -33,6 +33,48 @@ class FFT:
         blurred_image = cv2.filter2D(img, -1, kernel)
         cv2.imwrite(f'./3/3_binomial_{n}_{img_name}.png',blurred_image)
         return kernel, blurred_image
+    # Función para aplicar el padding a la imagen y al filtro (para convolución lineal)
+    def pad_image_and_filter(self, img, filtro):
+        img_h, img_w = img.shape
+        f_h, f_w = filtro.shape
+
+        # El padding necesario es suficiente para que no ocurra "envolvimiento"
+        padded_h = img_h + f_h - 1
+        padded_w = img_w + f_w - 1
+
+        # Padding de la imagen
+        padded_img = np.zeros((padded_h, padded_w))
+        padded_img[:img_h, :img_w] = img
+
+        # Padding del filtro
+        padded_filtro = np.zeros((padded_h, padded_w))
+        padded_filtro[:f_h, :f_w] = filtro
+
+        return padded_img, padded_filtro
+    
+    def linear_convolution(self, img, kernel):
+        # Hacemos el padding a la imagen y el filtro
+        padded_img, padded_kernel = self.pad_image_and_filter(img, kernel)
+
+        # FFT de la imagen y del filtro padded
+        fft_image = np.fft.fft2(padded_img)
+        fft_kernel = np.fft.fft2(padded_kernel)
+
+        # Multiplicamos en el dominio de Fourier
+        fft_result = fft_image * fft_kernel
+
+        # Inversa de la FFT para obtener la imagen convolucionada
+        convolved_image = np.fft.ifft2(fft_result)
+
+        # Tomamos la parte real de la convolución
+        convolved_image = np.real(convolved_image)
+
+        # Recortamos para que el resultado tenga el mismo tamaño que la imagen original
+        img_h, img_w = img.shape
+        convolved_image = convolved_image[:img_h, :img_w]
+
+        return convolved_image
+
 
 if __name__ == "__main__":
     fft = FFT()
@@ -64,6 +106,8 @@ if __name__ == "__main__":
     convolved_image = np.fft.ifft2(fft_result)
     
     convolved_image = np.real(convolved_image)
+
+    convolved_linear = fft.linear_convolution(image, kernel)
 
     #plt.figure(figsize=(4, 4))
     #plt.imshow(kernel, cmap='gray')
