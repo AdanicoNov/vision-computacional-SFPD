@@ -70,8 +70,8 @@ class FFT:
         convolved_image = np.real(convolved_image)
 
         # Recortamos para que el resultado tenga el mismo tamaño que la imagen original
-        img_h, img_w = img.shape
-        convolved_image = convolved_image[:img_h, :img_w]
+        #img_h, img_w = img.shape
+        #convolved_image = convolved_image[:img_h, :img_w]
 
         return convolved_image
 
